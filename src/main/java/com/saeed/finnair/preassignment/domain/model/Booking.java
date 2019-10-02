@@ -1,4 +1,4 @@
-package com.saeed.finnair.preassignment.domain;
+package com.saeed.finnair.preassignment.domain.model;
 
 import lombok.Data;
 

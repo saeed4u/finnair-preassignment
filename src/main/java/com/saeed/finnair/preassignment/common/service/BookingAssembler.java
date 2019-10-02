@@ -1,7 +1,7 @@
 package com.saeed.finnair.preassignment.common.service;
 
 import com.saeed.finnair.preassignment.common.dto.BookingDTO;
-import com.saeed.finnair.preassignment.domain.Booking;
+import com.saeed.finnair.preassignment.domain.model.Booking;
 import com.saeed.finnair.preassignment.rest.PassengersController;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
