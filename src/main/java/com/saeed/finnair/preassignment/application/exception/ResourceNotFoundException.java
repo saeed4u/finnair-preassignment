@@ -1,4 +1,4 @@
-package com.saeed.finnair.preassignment.common.exception;
+package com.saeed.finnair.preassignment.application.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.saeed.finnair.preassignment.common.exception;
+package com.saeed.finnair.preassignment.application.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
