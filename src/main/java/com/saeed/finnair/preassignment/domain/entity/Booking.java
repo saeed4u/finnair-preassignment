@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity()
@@ -12,20 +13,21 @@ import java.util.Set;
 @Table(name = "bookings")
 public class Booking {
 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	private Long id;
 
 	private String bookingId;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(
-			name = "passenger_bookings",
+			name = "booking_passengers",
 			joinColumns = {@JoinColumn(name = "booking_id")},
 			inverseJoinColumns = {@JoinColumn(name = "passenger_id")}
 	)
 	private Set<Passenger> passengers = new HashSet<>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "flight_bookings",
 			joinColumns = {@JoinColumn(name = "booking_id")},
@@ -35,4 +37,17 @@ public class Booking {
 
 	private LocalDateTime createdAt;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Booking booking = (Booking) o;
+		return Objects.equals(id, booking.id) &&
+				Objects.equals(bookingId, booking.bookingId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, bookingId);
+	}
 }
