@@ -93,6 +93,6 @@ public class SeedDatabase implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		//createRandomBooking();
+		createRandomBooking();
 	}
 }
