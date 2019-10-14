@@ -1,6 +1,7 @@
 package com.saeed.finnair.preassignment.domain.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class Passenger {
 	private String email;
 
 	@OneToOne
+	@ToString.Exclude
 	private Booking booking;
 
 	private LocalDateTime createdAt;

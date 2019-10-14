@@ -1,0 +1,1 @@
+drop table flight_bookings;

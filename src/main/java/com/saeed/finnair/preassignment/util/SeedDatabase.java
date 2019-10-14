@@ -2,9 +2,11 @@ package com.saeed.finnair.preassignment.util;
 
 import com.saeed.finnair.preassignment.domain.entity.Booking;
 import com.saeed.finnair.preassignment.domain.entity.Flight;
+import com.saeed.finnair.preassignment.domain.entity.Journey;
 import com.saeed.finnair.preassignment.domain.entity.Passenger;
 import com.saeed.finnair.preassignment.domain.repo.BookingRepo;
 import com.saeed.finnair.preassignment.domain.repo.FlightRepo;
+import com.saeed.finnair.preassignment.domain.repo.JourneyRepo;
 import com.saeed.finnair.preassignment.domain.repo.PassengerRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class SeedDatabase implements CommandLineRunner {
 	private final PassengerRepo passengerRepo;
 	private final FlightRepo flightRepo;
 	private final BookingRepo bookingRepo;
+	private final JourneyRepo journeyRepo;
 	private final EntityManager entityManager;
 
 	private Passenger createRandomPassenger(Booking booking) {
@@ -41,16 +44,40 @@ public class SeedDatabase implements CommandLineRunner {
 		return passengerRepo.save(passenger);
 	}
 
-	private Flight createRandomFlight(Booking booking, LocalDate departureDate, LocalDate arrivalDate) {
+	private Flight createRandomFlight(LocalDate departureDate, LocalDate arrivalDate) {
 		Flight flight = new Flight();
 		flight.setArrivalAirport(RandomStringUtils.random(3, true, false).toUpperCase());
 		flight.setDepartureAirport(RandomStringUtils.random(3, true, false).toUpperCase());
 		flight.setDepartureDate(departureDate);
 		flight.setArrivalDate(arrivalDate);
 		flight.setFlightNumber(RandomStringUtils.random(4, true, false));
-		flight.getBookings().add(booking);
 		flightRepo.save(flight);
 		return flight;
+	}
+
+	private void createRandomJourney(Booking booking) {
+		List<Flight> flights = new ArrayList<>();
+
+		LocalDate now = LocalDate.now();
+		LocalDate tomorrow = now.plusDays(1L);
+		for (int i = 0; i < 5; i++) {
+			flights.add(createRandomFlight(now, tomorrow.plusDays(i)));
+		}
+		Flight firstFlight = flights.get(0);
+		Flight lastFlight = flights.get(flights.size() - 1);
+		Journey journey = new Journey();
+
+		journey.setDepartureAirport(firstFlight.getDepartureAirport());
+		journey.setArrivalAirport(lastFlight.getArrivalAirport());
+
+		journey.setDepartureDate(firstFlight.getDepartureDate());
+		journey.setArrivalDate(lastFlight.getArrivalDate());
+
+		journey.getFlights().addAll(flights);
+		journey.setBooking(booking);
+		booking.getJourneys().add(journey);
+
+		journeyRepo.save(journey);
 	}
 
 	public Booking createRandomBooking() {
@@ -58,21 +85,15 @@ public class SeedDatabase implements CommandLineRunner {
 		Booking booking = new Booking();
 		booking.setBookingId(RandomStringUtils.random(6, true, true));
 		booking.setCreatedAt(LocalDateTime.now());
-		bookingRepo.save(booking);
+		booking = bookingRepo.save(booking);
 
 		Set<Passenger> passengers = new HashSet<>();
 		for (int i = 0; i < 5; i++) {
 			passengers.add(createRandomPassenger(booking));
 		}
 		booking.setPassengers(passengers);
-		LocalDate now = LocalDate.now();
-		LocalDate tomorrow = now.plusDays(1L);
-		Set<Flight> flights = new HashSet<>();
-		for (int i = 0; i < 2; i++) {
-			flights.add(createRandomFlight(booking, now.plusDays(i), tomorrow.plusDays(i)));
-		}
-		booking.setFlights(flights);
-		bookingRepo.save(booking);
+		booking = bookingRepo.save(booking);
+		createRandomJourney(booking);
 		return booking;
 	}
 
@@ -80,10 +101,11 @@ public class SeedDatabase implements CommandLineRunner {
 	public void truncateTable() {
 		List<String> tableNames = new ArrayList<>();
 		tableNames.add("booking_passengers");
-		tableNames.add("flight_bookings");
 		tableNames.add("flights");
 		tableNames.add("passengers");
 		tableNames.add("bookings");
+		tableNames.add("journeys");
+		tableNames.add("flights_journeys");
 		entityManager.createNativeQuery("SET @@foreign_key_checks = 0").executeUpdate();
 		tableNames.forEach(tableName -> entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate());
 		entityManager.createNativeQuery("SET @@foreign_key_checks = 1").executeUpdate();

@@ -17,10 +17,25 @@ import java.time.LocalDate;
 @Slf4j
 public class PassengersController {
 
+
 	private final PassengerService passengerService;
 
+	//   Passengers in the same flight who have the same booking
+
+	/**
+	 *
+	 * Passenger a,b,c
+	 * flight a
+	 * passenger a,b
+	 * flight b
+	 *
+	 *
+	 */
+
+
 	@GetMapping
-	public ResponseEntity getPassengerInFlightDTO(@RequestParam("flightNumber") String flightNumber, @RequestParam("departureDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate departureDate) {
+	public ResponseEntity getPassengerInFlightDTO(@RequestParam("flightNumber") String flightNumber,
+												  @RequestParam("departureDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate departureDate) {
 
 		log.info("New passenger in flight request. Params flightNumber:{} departureDate:{}", flightNumber, departureDate);
 
@@ -33,6 +48,9 @@ public class PassengersController {
 		}
 		return new ResponseEntity<>(passengerService.getPassengerInFlightWithDepartureDate(flightNumber, departureDate), HttpStatus.OK);
 	}
+
+
+	//flights can belong to a journey.
 
 	@GetMapping("/{passengerId}")
 	public ResponseEntity getPassengerFlights(@PathVariable("passengerId") Long passengerId) {

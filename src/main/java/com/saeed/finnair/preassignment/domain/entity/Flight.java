@@ -24,7 +24,7 @@ public class Flight {
 	private String arrivalAirport;
 
 	@ManyToMany(mappedBy = "flights", fetch = FetchType.EAGER)
-	private Set<Booking> bookings = new HashSet<>();
+	private Set<Journey> journeys = new HashSet<>();
 
 	private LocalDate departureDate;
 	private LocalDate arrivalDate;
